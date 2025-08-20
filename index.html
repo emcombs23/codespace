@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slope and Intercept Visualizer</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; margin: 40px; }
+    #controls { margin-bottom: 20px; }
+    label { margin: 0 10px; }
+    canvas { border: 1px solid #333; background: #fafafa; }
+  </style>
+</head>
+<body>
+  <h1>Slope and Intercept Visualizer</h1>
+  <div id="controls">
+    <label>Slope (m): <input type="number" id="slope" value="1" step="any"></label>
+    <label>Intercept (b): <input type="number" id="intercept" value="0" step="any"></label>
+    <button onclick="drawLine()">Plot Line</button>
+  </div>
+  <canvas id="plot" width="500" height="500"></canvas>
+  <script>
+    const canvas = document.getElementById('plot');
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+    const padding = 40;
+    
+    function drawAxes() {
+      ctx.clearRect(0, 0, width, height);
+      ctx.strokeStyle = '#888';
+      ctx.lineWidth = 1;
+      // X axis
+      ctx.beginPath();
+      ctx.moveTo(padding, height/2);
+      ctx.lineTo(width-padding, height/2);
+      ctx.stroke();
+      // Y axis
+      ctx.beginPath();
+      ctx.moveTo(width/2, padding);
+      ctx.lineTo(width/2, height-padding);
+      ctx.stroke();
+    }
+
+    function drawLine() {
+      drawAxes();
+      const m = parseFloat(document.getElementById('slope').value);
+      const b = parseFloat(document.getElementById('intercept').value);
+      ctx.strokeStyle = '#0074D9';
+      ctx.lineWidth = 2;
+      // Map x from -10 to 10
+      const xMin = -10, xMax = 10;
+      const yMin = -10, yMax = 10;
+      // Find y at left and right edges
+      const y1 = m * xMin + b;
+      const y2 = m * xMax + b;
+      // Convert to canvas coords
+      function toCanvas(x, y) {
+        const px = ((x - xMin) / (xMax - xMin)) * (width - 2*padding) + padding;
+        const py = height - (((y - yMin) / (yMax - yMin)) * (height - 2*padding) + padding);
+        return [px, py];
+      }
+      const [x1c, y1c] = toCanvas(xMin, y1);
+      const [x2c, y2c] = toCanvas(xMax, y2);
+      ctx.beginPath();
+      ctx.moveTo(x1c, y1c);
+      ctx.lineTo(x2c, y2c);
+      ctx.stroke();
+    }
+
+    // Initial plot
+    drawLine();
+  </script>
+</body>
+</html>
